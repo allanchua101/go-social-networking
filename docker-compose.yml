@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+  write-api:
+    image: go-social/write-api
+    container_name: go-social-write-api
+    build:
+      context: ./activity-write-api
+    depends_on:
+      - rabbitmq-server
+  rabbitmq-server:
+    build:
+      context: ./mqserver
+    container_name: go-social-topic-mq
+    environment:
+      "RABBITMQ_USER": "test"
+      "RABBITMQ_PASS": "password"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./mqserver/data:/var/lib/rabbitmq

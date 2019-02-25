@@ -1,5 +1,18 @@
-FROM iron/go
+FROM golang:alpine AS build-env
+RUN mkdir /go/src/app
+
+RUN apk add --no-cache git
+RUN go get -u github.com/golang/dep/cmd/dep
+
+ADD . /go/src/app
+COPY ./Gopkg.toml /go/src/app
+
+WORKDIR /go/src/app 
+
+RUN dep ensure && go build -o goapp
+
+# final stage
+FROM alpine
 WORKDIR /app
-# Now just add the binary
-ADD write-api /app/
-ENTRYPOINT ["./write-api"]
+COPY --from=build-env /go/src/app /app/
+ENTRYPOINT ./goapp

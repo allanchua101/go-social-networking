@@ -1,0 +1,7 @@
+version: "3"
+
+services:
+  write-api:
+    build:
+      context: ./activity-write-api
+    image: go-social/write-api

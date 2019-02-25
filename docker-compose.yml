@@ -6,15 +6,17 @@ services:
     container_name: go-social-write-api
     build:
       context: ./activity-write-api
+    depends_on:
+      - rabbitmq-server
   rabbitmq-server:
-    image: launcher.gcr.io/google/rabbitmq3
+    build:
+      context: ./mqserver
     container_name: go-social-topic-mq
     environment:
-      "RABBITMQ_ERLANG_COOKIE": "unique-erlang-cookie"
+      "RABBITMQ_USER": "test"
+      "RABBITMQ_PASS": "password"
     ports:
-      - "4369:4369"
-      - "5671:5671"
       - "5672:5672"
-      - "25672:25672"
+      - "15672:15672"
     volumes:
       - ./mqserver/data:/var/lib/rabbitmq

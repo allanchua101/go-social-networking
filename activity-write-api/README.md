@@ -1,3 +1,5 @@
+# Testing Locally
+
 ## Building image
 
 Run the command below to build a docker image.

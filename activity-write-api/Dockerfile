@@ -4,15 +4,15 @@ RUN mkdir /go/src/app
 RUN apk add --no-cache git
 RUN go get -u github.com/golang/dep/cmd/dep
 
-ADD . /go/src/app
-COPY ./Gopkg.toml /go/src/app
+WORKDIR /go/src/activity-write-api
 
-WORKDIR /go/src/app 
+COPY . .
 
+RUN ls
 RUN dep ensure && go build -o goapp
 
 # final stage
 FROM alpine
 WORKDIR /app
-COPY --from=build-env /go/src/app /app/
+COPY --from=build-env /go/src/activity-write-api /app/
 ENTRYPOINT ./goapp

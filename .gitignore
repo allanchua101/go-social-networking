@@ -13,3 +13,4 @@
 
 activity-write-api/vendor/*
 mqserver/data/*
+mongoserver/data/*

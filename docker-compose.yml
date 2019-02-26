@@ -8,10 +8,12 @@ services:
       context: ./activity-write-api
     depends_on:
       - rabbitmq-server
+      - mongo-server
   rabbitmq-server:
+    image: go-social/mqserver
+    container_name: go-social-topic-mq
     build:
       context: ./mqserver
-    container_name: go-social-topic-mq
     environment:
       "RABBITMQ_USER": "test"
       "RABBITMQ_PASS": "password"
@@ -20,3 +22,19 @@ services:
       - "15672:15672"
     volumes:
       - ./mqserver/data:/var/lib/rabbitmq
+  mongo-server:
+    image: go-social/mongo
+    container_name: go-social-mongo
+    build:
+      context: ./mongoserver
+    ports:
+      - "27018:27017"
+    environment:
+      "MONGO_INITDB_ROOT_USERNAME": "root"
+      "MONGO_INITDB_ROOT_PASSWORD": "example"
+      "PROJECTION_MAIN_NAME": "go-social-db"
+      "PROJECTION_SLAVE_NAME": "go-social-slave"
+    volumes:
+      - ./mongoserver/data:/data/db
+      - ./mongoserver/bk:/data/bkp
+    restart: always

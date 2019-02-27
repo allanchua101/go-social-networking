@@ -8,6 +8,6 @@ import (
 func registerRoutes(router *gin.Engine) {
 	activityRoutes := router.Group("/activity")
 	{
-		activityRoutes.POST("/new", controllers.HandleNewActivity)
+		activityRoutes.POST("/new", controllers.HandleNewActivityRequest)
 	}
 }

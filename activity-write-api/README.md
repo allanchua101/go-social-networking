@@ -1,6 +1,16 @@
 # Testing Locally
 
-## Building image
+## Building locally
+
+Run the command below to run the on stand alone fashion
+
+```sh
+go install ./...
+go build
+activity-write-api
+```
+
+## Building a docker image
 
 Run the command below to build a docker image.
 
@@ -22,7 +32,7 @@ docker run --rm -p 8090:8080 go-social/write-api
 Run the commands below to remove dev artifacts
 
 ```sh
-rm write-api
+rm activity-write-api
 docker rmi go-social/write-api
 docker rmi iron/go:dev
 docker rmi iron/go:latest

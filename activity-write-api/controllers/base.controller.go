@@ -22,9 +22,9 @@ func sendResponse(c *gin.Context, statusCode int, output gin.H) {
 	}
 }
 
-// RespondOK method is in charge of sending the output payload
+// SendOK method is in charge of sending the output payload
 // based on the provided "Accept" request header.
-func RespondOK(c *gin.Context, output gin.H) {
+func SendOK(c *gin.Context, output gin.H) {
 	sendResponse(c, http.StatusOK, output)
 }
 
@@ -32,4 +32,10 @@ func RespondOK(c *gin.Context, output gin.H) {
 // sending 422 Code that indicates invalid parameter contents.
 func SendUnprocessableEntity(c *gin.Context, output gin.H) {
 	sendResponse(c, http.StatusUnprocessableEntity, output)
+}
+
+// SendBadRequest method is in charge of sending 400
+// code that indicates un-readable request content
+func SendBadRequest(c *gin.Context, output gin.H) {
+	sendResponse(c, http.StatusBadRequest, output)
 }

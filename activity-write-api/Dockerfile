@@ -8,7 +8,6 @@ WORKDIR /go/src/activity-write-api
 
 COPY . .
 
-RUN ls
 RUN dep ensure && go build -o goapp
 
 # final stage

@@ -15,27 +15,30 @@ func bootWriteMQs() (*amqp.Connection, *amqp.Connection, bool) {
 }
 
 func emitEvent(conn *amqp.Connection, queueName string, jsonString string) bool {
-	if conn != nil {
-		defer conn.Close()
-		ch, err := conn.Channel()
-		defer ch.Close()
-
-		if err == nil {
-			publishErr := ch.Publish(
-				"", 				// Empty Exchange
-				queueName,	// Worker Queue
-				false, 			// No Mandatory Queue Destination
-				false,			// Server can chill and wait to queue
-				amqp.Publishing {
-					ContentType: "text/plain",
-					Body: []byte(jsonString),
-			})
-
-			return publishErr != nil
-		}
+	if(conn == nil) {
+		return  false
 	}
 
-	return false
+	defer conn.Close()
+	ch, err := conn.Channel()
+	defer ch.Close()
+
+	if(err != nil) {
+		return false
+	}
+
+	publishErr := ch.Publish(
+		"", 				// Empty Exchange
+		queueName,	// Worker Queue
+		false, 			// No Mandatory Queue Destination
+		false,			// Server can chill and wait to queue
+		amqp.Publishing {
+			DeliveryMode: amqp.Persistent,
+			ContentType: "text/plain",
+			Body: []byte(jsonString),
+	})
+
+	return publishErr == nil
 }
 
 // PublishEvent method is used for emitting events to
@@ -51,13 +54,15 @@ func PublishEvent(queueName string, content string) error {
 
 	isEmittedViaMaster := emitEvent(master, queueName, content)
 
-	if !isEmittedViaMaster {
-		isEmittedViaSlave := emitEvent(slave, queueName, content)
-
-		if !isEmittedViaSlave {
-			return errors.New("Cannot publish to both master and slave queues.")
-		}
+	if(isEmittedViaMaster) {
+		return nil
 	}
 
-	return nil
+	isEmittedViaSlave := emitEvent(slave, queueName, content)
+
+	if isEmittedViaSlave {
+		return nil
+	}
+
+	return errors.New("Cannot publish to both master and slave queues.")
 }

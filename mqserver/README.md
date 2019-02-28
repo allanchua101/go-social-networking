@@ -1,6 +1,6 @@
-# MQ-SERVER for Topics
+# RabbitMQ as messaging medium.
 
-This folder is used as the persistent drive of the RabbitMQs used for pub/sub implementations.
+RabbitMQ is selected for development simulation, in real-life you would want to consume a messaging medium from cloud providers (SQS and ) to offload scaling and maintenance of messaging infrastructure.
 
 ## Connecting to a running RabbitMQ container
 

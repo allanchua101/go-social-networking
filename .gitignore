@@ -13,5 +13,7 @@
 
 activity-write-api/activity-write-api
 activity-write-api/vendor/*
+activity-write-daemon/activity-write-daemon
+activity-write-daemon/vendor/*
 mqserver/data/*
 mongoserver/data/*

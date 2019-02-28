@@ -1,20 +1,34 @@
 version: "3"
 
 services:
-  write-api:
+  write.api:
     image: go-social/write-api
     container_name: go-social-write-api
     build:
       context: ./activity-write-api
     depends_on:
       - rabbitmqserver
-      - mongo-server
+      - mongo.server
+      - write.daemon
     environment:
       "WRITE_MQ_MASTER_CONN_STR": "amqp://test:password@rabbitmqserver:5672/" # For the sake of testing
       "WRITE_MQ_SLAVE_CONN_STR": "amqp://test:password@rabbitmqserver:5672/" # Master and slave are identical
       "WRITE_API_QUEUE_NAME": "activity-write-queue"
     ports:
       - "8080:8080"
+    links:
+      - rabbitmqserver
+  write.daemon:
+    image: go-social/write-daemon
+    container_name: go-social-write-daemon
+    build:
+      context: ./activity-write-daemon
+    depends_on:
+      - rabbitmqserver
+    environment:
+      "WRITE_MQ_MASTER_CONN_STR": "amqp://test:password@rabbitmqserver:5672/" # For the sake of testing
+      "WRITE_MQ_SLAVE_CONN_STR": "amqp://test:password@rabbitmqserver:5672/" # Master and slave are identical
+      "WRITE_API_QUEUE_NAME": "activity-write-queue"
     links:
       - rabbitmqserver
   rabbitmqserver:
@@ -32,7 +46,7 @@ services:
       - "15672:15672"
     volumes:
       - ./mqserver/data:/var/lib/rabbitmq
-  mongo-server:
+  mongo.server:
     image: go-social/mongo
     container_name: go-social-mongo
     build:

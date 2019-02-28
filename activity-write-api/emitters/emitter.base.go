@@ -3,7 +3,6 @@ package emitters
 import (
 	"os"
 	"errors"
-	"fmt"
 	"github.com/streadway/amqp"
 )
 

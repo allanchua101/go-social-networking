@@ -14,4 +14,5 @@ RUN dep ensure && go build -o goapp
 FROM alpine
 WORKDIR /app
 COPY --from=build-env /go/src/activity-write-api /app/
+EXPOSE 8080
 ENTRYPOINT ./goapp

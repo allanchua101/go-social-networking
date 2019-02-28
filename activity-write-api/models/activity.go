@@ -4,6 +4,8 @@ package models
 // instance of activity records stored in the 
 // applicaiton.
 type Activity struct {
+	// ID of activity record.
+	ID string
 	// The actor performing the activity represented by user name
 	Actor string
 	// The verb of the activity, please include at 

@@ -38,9 +38,6 @@ func HandleNewActivityRequest(c *gin.Context) {
 			writeQueueName := os.Getenv("WRITE_API_QUEUE_NAME")
 			serializedData, serializeErr := json.Marshal(input)
 
-			fmt.Println("%s", writeQueueName)
-			fmt.Println("%s", string(serializedData))
-
 			if serializeErr == nil {
 				publishErr := emitters.PublishEvent(writeQueueName, string(serializedData))
 

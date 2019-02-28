@@ -7,19 +7,20 @@ services:
     build:
       context: ./activity-write-api
     depends_on:
-      - rabbitmq-server
+      - rabbitmqserver
       - mongo-server
     environment:
-      "WRITE_MQ_MASTER_CONN_STR": "amqp://test:password@localhost:5672/" # For the sake of testing
-      "WRITE_MQ_SLAVE_CONN_STR": "amqp://test:password@localhost:5672/" # Master and slave are identical
+      "WRITE_MQ_MASTER_CONN_STR": "amqp://test:password@rabbitmqserver:5672/" # For the sake of testing
+      "WRITE_MQ_SLAVE_CONN_STR": "amqp://test:password@rabbitmqserver:5672/" # Master and slave are identical
       "WRITE_API_QUEUE_NAME": "activity-write-queue"
     ports:
       - "8080:8080"
     links:
-      - rabbitmq-server
-  rabbitmq-server:
+      - rabbitmqserver
+  rabbitmqserver:
     image: go-social/mqserver
     container_name: go-social-topic-mq
+    hostname: rabbitmqserver
     build:
       context: ./mqserver
     environment:

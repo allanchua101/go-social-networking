@@ -3,13 +3,14 @@ package emitters
 import (
 	"os"
 	"errors"
+	"fmt"
 	"github.com/streadway/amqp"
 )
 
 func bootWriteMQs() (*amqp.Connection, *amqp.Connection, bool) {
 	conn1, err1 := amqp.Dial(os.Getenv("WRITE_MQ_MASTER_CONN_STR"))
 	conn2, err2 := amqp.Dial(os.Getenv("WRITE_MQ_SLAVE_CONN_STR"))
-	isAnyMQOpened :=  err1 != nil || err2 != nil
+	isAnyMQOpened :=  err1 == nil || err2 == nil
 
 	return conn1, conn2, isAnyMQOpened
 }
@@ -17,8 +18,9 @@ func bootWriteMQs() (*amqp.Connection, *amqp.Connection, bool) {
 func emitEvent(conn *amqp.Connection, queueName string, jsonString string) bool {
 	if conn != nil {
 		defer conn.Close()
-		ch, err := conn.Channel();
-		
+		ch, err := conn.Channel()
+		defer ch.Close()
+
 		if err == nil {
 			publishErr := ch.Publish(
 				"", 				// Empty Exchange

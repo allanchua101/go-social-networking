@@ -3,40 +3,16 @@ package main
 import (
 	"os"
 	"log"
-	"time"
+
+	"encoding/json"
 
 	"activity-write-daemon/messaging"
-
-	"github.com/streadway/amqp"
+	"activity-write-daemon/models"
 )
 
-func chill() {
-	time.Sleep(5 * time.Second)
-}
-
-func reliableConnectionBuilder() *amqp.Connection {
-	for {
-		conn := messaging.BuildConnection()
-
-		if conn == nil {
-			log.Println("Write daemon cannot connect to either master or slave queue. Retrying in 5 seconds	....")
-			chill()
-		} else {
-			return conn
-		}
-	}
-}
-
-func reliableChannelBuilder(conn *amqp.Connection) *amqp.Channel {
-	for {
-		chn := messaging.BuildChannel(conn)
-
-		if chn == nil {
-			log.Println("Write daemon cannot open a channel. Retrying in 5 seconds....")
-			chill()
-		} else {
-			return chn
-		}
+func failOnError(err error, msg string) {
+	if err != nil {
+		log.Fatal(msg)
 	}
 }
 
@@ -44,17 +20,15 @@ func reliableChannelBuilder(conn *amqp.Connection) *amqp.Channel {
 func main() {
 	log.Println("GO Social Write Daemon Starting....")
 
-	conn := reliableConnectionBuilder()
-	chn := reliableChannelBuilder(conn)
+	conn := messaging.ReliableConnectionBuilder()
+	chn := messaging.ReliableChannelBuilder(conn)
 	err := chn.Qos(
 		1,     // prefetch count
 		0,     // prefetch size
 		false, // global
 	)
 
-	if err != nil {
-		log.Fatal("Write daemon cannot configure QOS.")
-	}
+	failOnError(err, "Write daemon cannot configure QOS.")
 
 	msgs, err := chn.Consume(
 		os.Getenv("WRITE_API_QUEUE_NAME"), // queue
@@ -66,15 +40,23 @@ func main() {
 		nil,    // args
 	)
 
-	if err != nil {
-		log.Fatal("Write daemon cannot consume messages")
-	}
+	failOnError(err, "Write daemon cannot consume messages")
 
 	forever := make(chan bool)
 
 	go func() {
 		for d := range msgs {
-			log.Printf("Received a message: %s\n", d.Body)
+			var activity *models.Activity
+			activityData := []byte(d.Body)
+			err := json.Unmarshal(activityData, &activity)
+
+			if err != nil {
+				log.Printf("Error %v\n", err)
+				log.Printf("This message cannot be unmarshalled: %s\n", d.Body)
+				break
+			}
+
+			log.Printf("Activity %s is being processed..\n", activity.ID)
 			d.Ack(false)
 		}
 	}()

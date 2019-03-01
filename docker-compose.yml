@@ -26,8 +26,7 @@ services:
     depends_on:
       - rabbitmqserver
     environment:
-      "WRITE_MQ_MASTER_CONN_STR": "amqp://test:password@rabbitmqserver:5672/" # For the sake of testing
-      "WRITE_MQ_SLAVE_CONN_STR": "amqp://test:password@rabbitmqserver:5672/" # Master and slave are identical
+      "WRITE_MQ_CONN_STR": "amqp://test:password@rabbitmqserver:5672/" # For the sake of testing
       "WRITE_API_QUEUE_NAME": "activity-write-queue"
     links:
       - rabbitmqserver

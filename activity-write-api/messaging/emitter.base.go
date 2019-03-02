@@ -1,4 +1,4 @@
-package emitters
+package messaging
 
 import (
 	"os"

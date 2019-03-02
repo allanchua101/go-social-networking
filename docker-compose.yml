@@ -25,14 +25,14 @@ services:
       context: ./activity-write-daemon
     depends_on:
       - rabbitmqserver
-      - pg.server
+      - pgserver
     environment:
       "WRITE_MQ_CONN_STR": "amqp://test:password@rabbitmqserver:5672/" # For the sake of testing
       "WRITE_API_QUEUE_NAME": "activity-write-queue"
-      "EVENT_STORE_STR":  "User ID=dev01;Password=godevrocks;Host=pg.server;Port=5555;Database=gosocialdb;"
+      "EVENT_STORE_STR": "host=pgserver port=5432 user=dev01 dbname=gosocialdb password=godevrocks sslmode=disable"
     links:
       - rabbitmqserver
-      - pg.server
+      - pgserver
   rabbitmqserver:
     image: go-social/mqserver
     container_name: go-social-topic-mq
@@ -64,17 +64,17 @@ services:
       - ./mongoserver/data:/data/db
       - ./mongoserver/bk:/data/bkp
     restart: always
-  pg.server:
+  pgserver:
     image: postgres
     container_name: go-social-es-store
-    hostname: pg.server
+    hostname: pgserver
     restart: always
     environment:
       POSTGRES_PASSWORD: godevrocks
       POSTGRES_USER: dev01
       POSTGRES_DB: gosocialdb
     ports:
-      - 5555:5432
+      - "5432:5432"
     volumes:
       - ./pgserver/postgres-data:/var/lib/postgresql/data
       - ./pgserver/001_tables:/go-social/sql/001_tables

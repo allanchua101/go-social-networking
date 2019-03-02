@@ -1,0 +1,130 @@
+{
+	"info": {
+		"_postman_id": "2f1568dd-e74d-4bcc-9bbb-a76c7707dbe7",
+		"name": "GO Social",
+		"description": "This collection is all test cases for hitting GO Social network APIs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Add New Activity (Working Like)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"actor\": \"ivan\",\n  \"verb\": \"like\",\n  \"object\": \"photo:1\",\n  \"target\": \"eric\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/activity/new",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"activity",
+						"new"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add New Activity (Working Post)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"actor\": \"ivan\",\n  \"verb\": \"post\",\n  \"object\": \"photo:1\",\n  \"target\": null\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/activity/new",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"activity",
+						"new"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add New Activity (Bad Request)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"actor\": \"ivan\",\n  \"verb\": \"like\",\n  \"object\": \"photo:1\",\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/activity/new",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"activity",
+						"new"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add New Activity (No Actor)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"verb\": \"like\",\n  \"object\": \"photo:1\",\n  \"target\": \"eric\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/activity/new",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"activity",
+						"new"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

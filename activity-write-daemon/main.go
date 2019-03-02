@@ -4,10 +4,9 @@ import (
 	"os"
 	"log"
 
-	"encoding/json"
-
 	"activity-write-daemon/messaging"
-	"activity-write-daemon/models"
+	"activity-write-daemon/persistence"
+	"activity-write-daemon/parsers"
 )
 
 func failOnError(err error, msg string) {
@@ -46,17 +45,18 @@ func main() {
 
 	go func() {
 		for d := range msgs {
-			var activity *models.Activity
-			activityData := []byte(d.Body)
-			err := json.Unmarshal(activityData, &activity)
+			activity, err := parsers.ParseActivityJson(d.Body)
 
 			if err != nil {
 				log.Printf("Error %v\n", err)
-				log.Printf("This message cannot be unmarshalled: %s\n", d.Body)
+				log.Printf("This event cannot be unmarshalled: %s\n", d.Body)
 				break
 			}
 
-			log.Printf("Activity %s is being processed..\n", activity.ID)
+			log.Printf("Event %s is being processed..\n", activity.ID)
+			isStored := persistence.PushEvent(activity)
+			log.Printf("Event %s is stored?: %t\n", activity.ID, isStored)
+
 			d.Ack(false)
 		}
 	}()

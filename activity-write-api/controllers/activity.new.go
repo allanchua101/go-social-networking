@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"activity-write-api/emitters"
+	"activity-write-api/messaging"
 	"activity-write-api/models"
 	"activity-write-api/validators"
 
@@ -44,7 +44,7 @@ func HandleNewActivityRequest(c *gin.Context) {
 	serializedData, serializeErr := json.Marshal(input)
 
 	if serializeErr == nil {
-		publishErr := emitters.PublishEvent(writeQueueName, string(serializedData))
+		publishErr := messaging.PublishEvent(writeQueueName, string(serializedData))
 
 		fmt.Println(publishErr)
 		// TODO: Circuit break to a log store.

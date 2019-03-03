@@ -27,7 +27,8 @@ services:
       - rabbitmqserver
       - pgserver
     environment:
-      "WRITE_MQ_CONN_STR": "amqp://test:password@rabbitmqserver:5672/" # For the sake of testing
+      "WRITE_MQ_CONN_STR": "amqp://test:password@rabbitmqserver:5672/" # For local testing only
+      "READ_MQ_CONN_STR": "amqp://test:password@rabbitmqserver:5672/" # For local testing only
       "WRITE_API_QUEUE_NAME": "activity-write-queue"
       "EVENT_STORE_STR": "host=pgserver port=5432 user=dev01 dbname=gosocialdb password=godevrocks sslmode=disable"
     links:
@@ -43,6 +44,9 @@ services:
       "RABBITMQ_USER": "test"
       "RABBITMQ_PASS": "password"
       "WRITE_API_QUEUE_NAME": "activity-write-queue"
+      "MY_FEED_PROJECTOR_QUEUE_NAME": "my-feed-queue"
+      "FRIENDS_FEED_PROJECTOR_QUEUE_NAME": "friends-feed-queue"
+      "ACTIVITY_EXCHANGE_NAME": "activity-topic-exchange"
     ports:
       - "5672:5672"
       - "15672:15672"

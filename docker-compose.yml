@@ -28,9 +28,11 @@ services:
       - pgserver
     environment:
       "WRITE_MQ_CONN_STR": "amqp://test:password@rabbitmqserver:5672/" # For local testing only
-      "READ_MQ_CONN_STR": "amqp://test:password@rabbitmqserver:5672/" # For local testing only
       "WRITE_API_QUEUE_NAME": "activity-write-queue"
       "EVENT_STORE_STR": "host=pgserver port=5432 user=dev01 dbname=gosocialdb password=godevrocks sslmode=disable"
+      "READ_MQ_CONN_STR": "amqp://test:password@rabbitmqserver:5672/" # For local testing only
+      "READ_MQ_SLAVE_CONN_STR": "amqp://test:password@rabbitmqserver:5672/" # For local testing only
+      "ACTIVITY_EXCHANGE_NAME": "activity-topic-exchange"
     links:
       - rabbitmqserver
       - pgserver

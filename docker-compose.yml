@@ -49,6 +49,20 @@ services:
     links:
       - rabbitmqserver
       - mongoserver
+  friends.feed.daemon:
+    image: go-social/friends-feed-daemon
+    container_name: go-social-friends-feed-daemon
+    build:
+      context: ./friends-feed-daemon
+    depends_on:
+      - rabbitmqserver
+      - mongoserver
+    environment:
+      "READ_MQ_CONN_STR": "amqp://test:password@rabbitmqserver:5672/" # For local testing only
+      "FRIENDS_FEED_PROJECTOR_QUEUE_NAME": "friends-feed-queue"
+    links:
+      - rabbitmqserver
+      - mongoserver
   rabbitmqserver:
     image: go-social/mqserver
     container_name: go-social-topic-mq

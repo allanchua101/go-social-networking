@@ -20,6 +20,8 @@ docker-compose up
 
 ## Architecture Diagram
 
+![API Architecture](https://github.com/allanchua101/go-social-networking/blob/master/docs/Design%20Diagram.png "API Architecture")
+
 ## Technology Stack
 
 This section describes the technology stack composing the application.

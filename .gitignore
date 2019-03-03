@@ -18,6 +18,7 @@ activity-write-daemon/vendor/*
 my-feed-daemon/vendor/*
 my-feed-daemon/my-feed-daemon
 friends-feed-daemon/vendor/*
+friends-feed-daemon/friends-feed-daemon
 mqserver/data/*
 mongoserver/data/*
 pgserver/postgres-data/*

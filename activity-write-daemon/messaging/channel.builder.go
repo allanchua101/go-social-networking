@@ -31,8 +31,21 @@ func ReliableChannelBuilder(conn *amqp.Connection) *amqp.Channel {
 		if chn == nil {
 			log.Println("Write daemon cannot open a channel. Retrying in 5 seconds....")
 			time.Sleep(5 * time.Second)
-		} else {
-			return chn
+			continue
 		}
+
+		err := chn.Qos(
+			1,     // prefetch count
+			0,     // prefetch size
+			false, // global
+		)
+
+		if err != nil {
+			log.Println("QOS cannot be configured. Retrying in 5 seconds....")
+			chn.Close()
+			continue;
+		}
+
+		return chn
 	}
 }

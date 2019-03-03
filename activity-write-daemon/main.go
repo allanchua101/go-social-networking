@@ -3,10 +3,12 @@ package main
 import (
 	"os"
 	"log"
+	"encoding/json"
 
 	"activity-write-daemon/messaging"
 	"activity-write-daemon/persistence"
 	"activity-write-daemon/parsers"
+	"activity-write-daemon/models"
 )
 
 func failOnError(err error, msg string) {
@@ -15,20 +17,36 @@ func failOnError(err error, msg string) {
 	}
 }
 
+func storeEvent(activity *models.Activity) {
+	log.Printf("Event %s is being processed..\n", activity.ID)
+	isStored := persistence.PushEvent(activity)
+
+	if isStored {
+		log.Printf("Event stored?: %s\n", activity.ID)
+	}
+}
+
+func publishProjectionMsg(activity *models.Activity) error {
+	mqStr1 := os.Getenv("READ_MQ_CONN_STR")
+	mqStr2 := os.Getenv("READ_MQ_SLAVE_CONN_STR")
+	exchangeName := os.Getenv("ACTIVITY_EXCHANGE_NAME")
+	serializedData, serializeErr := json.Marshal(activity)
+
+	if serializeErr != nil {
+		return serializeErr
+	}
+	
+	err := messaging.PublishEvent(mqStr1, mqStr2, exchangeName, string(serializedData))
+
+	return err
+}
+
 // main is the application's composition root.
 func main() {
 	log.Println("GO Social Write Daemon Starting....")
 
 	conn := messaging.ReliableConnectionBuilder()
 	chn := messaging.ReliableChannelBuilder(conn)
-	err := chn.Qos(
-		1,     // prefetch count
-		0,     // prefetch size
-		false, // global
-	)
-
-	failOnError(err, "Write daemon cannot configure QOS.")
-
 	msgs, err := chn.Consume(
 		os.Getenv("WRITE_API_QUEUE_NAME"), // queue
 		"",     // consumer
@@ -42,7 +60,6 @@ func main() {
 	failOnError(err, "Write daemon cannot consume messages")
 
 	forever := make(chan bool)
-
 	go func() {
 		for d := range msgs {
 			activity, err := parsers.ParseActivityJson(d.Body)
@@ -53,9 +70,13 @@ func main() {
 				break
 			}
 
-			log.Printf("Event %s is being processed..\n", activity.ID)
-			isStored := persistence.PushEvent(activity)
-			log.Printf("Event %s is stored?: %t\n", activity.ID, isStored)
+			storeEvent(activity)
+			err = publishProjectionMsg(activity)
+
+			if err != nil {
+				log.Printf("Publishing to projection exchange failed: %s \n", activity.ID)
+				break;
+			}
 
 			d.Ack(false)
 		}

@@ -6,14 +6,28 @@ import (
 
 const followVerb string = "follow"
 const postVerb string = "post"
+const shareVerb string = "share"
+const likeVerb string = "like"
+const unfollowVerb string = "unfollow"
 const activityActorRequiredMessage = "Actor is required."
 const activityVerbRequiredMessage = "Verb is required."
 const activityObjectRequiredMessage = "Object is required for this verb."
 const activityTargetRequiredMessage = "Target is required for this verb."
-const emptyString = ""
+const invalidVerbMessage = "Provided verb is invalid."
 
 func isEmpty(input string) bool {
-	return input == emptyString
+	return input == ""
+}
+
+func isValidVerb(input string) bool {
+	set := [5]string{followVerb, postVerb, shareVerb, likeVerb, unfollowVerb}
+
+	for _, item := range set {
+			if item == input {
+					return true
+			}
+	}
+	return false
 }
 
 // ValidateNewActivity validates if a new activity
@@ -23,6 +37,10 @@ func ValidateNewActivity(activity *models.Activity) []string  {
 
 	if isEmpty(activity.Actor) {
 		output = append(output, activityActorRequiredMessage)
+	}
+
+	if !isValidVerb(activity.Verb) {
+		output = append(output, invalidVerbMessage)
 	}
 
 	if isEmpty(activity.Verb) {

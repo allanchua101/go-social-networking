@@ -11,12 +11,6 @@ import (
 	"activity-write-daemon/models"
 )
 
-func failOnError(err error, msg string) {
-	if err != nil {
-		log.Fatal(msg)
-	}
-}
-
 func storeEvent(activity *models.Activity) {
 	log.Printf("Event %s is being processed..\n", activity.ID)
 	isStored := persistence.PushEvent(activity)
@@ -45,19 +39,13 @@ func publishProjectionMsg(activity *models.Activity) error {
 func main() {
 	log.Println("GO Social Write Daemon Starting....")
 
-	conn := messaging.ReliableConnectionBuilder()
-	chn := messaging.ReliableChannelBuilder(conn)
-	msgs, err := chn.Consume(
-		os.Getenv("WRITE_API_QUEUE_NAME"), // queue
-		"",     // consumer
-		false,  // auto-ack
-		false,  // exclusive
-		false,  // no-local
-		false,  // no-wait
-		nil,    // args
-	)
+	mqConnStr := os.Getenv("WRITE_MQ_CONN_STR")
+	queueName := os.Getenv("WRITE_API_QUEUE_NAME")
+	msgs, err := messaging.ConsumeQueue(mqConnStr, queueName)
 
-	failOnError(err, "Write daemon cannot consume messages")
+	if err != nil {
+		log.Fatal("Daemon cannot consume messages")
+	}
 
 	forever := make(chan bool)
 	go func() {

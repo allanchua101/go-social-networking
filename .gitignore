@@ -15,6 +15,9 @@ activity-write-api/activity-write-api
 activity-write-api/vendor/*
 activity-write-daemon/activity-write-daemon
 activity-write-daemon/vendor/*
+my-feed-daemon/vendor/*
+my-feed-daemon/my-feed-daemon
+friends-feed-daemon/vendor/*
 mqserver/data/*
 mongoserver/data/*
 pgserver/postgres-data/*
